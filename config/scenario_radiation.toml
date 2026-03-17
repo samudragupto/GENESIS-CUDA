@@ -1,0 +1,63 @@
+[scenario]
+name = "Explosive Radiation"
+description = "Few species in rich environment - tests rapid speciation and niche filling"
+
+[world]
+size = 1024
+water_level = 0.35
+mountain_height = 1.0
+
+[terrain]
+octaves = 8
+lacunarity = 2.0
+persistence = 0.5
+seed = 66666
+erosion_iterations = 100
+erosion_droplets = 200000
+thermal_erosion_iterations = 50
+thermal_erosion_threshold = 0.01
+
+[creatures]
+initial_count = 1000
+max_count = 500000
+initial_species = 2
+
+[climate]
+initial_temperature = 22.0
+temperature_variation = 10.0
+day_length = 2400.0
+season_length = 24000.0
+
+[vegetation]
+growth_rate = 0.02
+spread_rate = 0.01
+initial_density = 0.7
+max_density = 3.0
+
+[genetics]
+mutation_rate = 0.05
+crossover_rate = 0.8
+speciation_threshold = 0.15
+
+[metabolism]
+base_energy_drain = 0.003
+eat_energy_gain = 0.8
+attack_damage = 0.2
+reproduce_energy_cost = 0.12
+reproduce_cooldown = 25.0
+max_energy = 2.5
+
+[disease]
+enabled = false
+
+[rendering]
+width = 1920
+height = 1080
+
+[simulation]
+speed = 1.0
+max_ticks = 100000
+
+[output]
+directory = "./output/radiation"
+auto_save_interval = 5000

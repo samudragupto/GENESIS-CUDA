@@ -1,0 +1,71 @@
+[scenario]
+name = "Ocean World"
+description = "Mostly ocean with scattered small islands - extreme isolation"
+
+[world]
+size = 1024
+water_level = 0.70
+mountain_height = 0.6
+
+[terrain]
+octaves = 7
+lacunarity = 2.3
+persistence = 0.4
+seed = 11111
+erosion_iterations = 80
+erosion_droplets = 100000
+thermal_erosion_iterations = 20
+thermal_erosion_threshold = 0.02
+
+[creatures]
+initial_count = 3000
+max_count = 100000
+initial_species = 8
+
+[climate]
+initial_temperature = 22.0
+temperature_variation = 5.0
+day_length = 2400.0
+season_length = 18000.0
+
+[vegetation]
+growth_rate = 0.012
+spread_rate = 0.01
+initial_density = 0.7
+max_density = 3.0
+
+[genetics]
+mutation_rate = 0.03
+crossover_rate = 0.65
+speciation_threshold = 0.2
+
+[metabolism]
+base_energy_drain = 0.004
+eat_energy_gain = 0.55
+attack_damage = 0.2
+reproduce_energy_cost = 0.15
+reproduce_cooldown = 35.0
+max_energy = 2.0
+
+[disease]
+enabled = false
+
+[rendering]
+width = 1920
+height = 1080
+
+[simulation]
+speed = 1.0
+max_ticks = 100000
+
+[output]
+directory = "./output/ocean"
+auto_save_interval = 5000
+
+[fluid]
+enabled = true
+max_particles = 200000
+smoothing_length = 0.05
+rest_density = 1000.0
+gas_constant = 2000.0
+viscosity = 0.015

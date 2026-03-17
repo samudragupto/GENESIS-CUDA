@@ -1,0 +1,63 @@
+[scenario]
+name = "Island Archipelago"
+description = "Multiple islands with isolated populations driving speciation"
+
+[world]
+size = 512
+water_level = 0.55
+mountain_height = 0.8
+
+[terrain]
+octaves = 6
+lacunarity = 2.2
+persistence = 0.45
+seed = 12345
+erosion_iterations = 150
+erosion_droplets = 100000
+thermal_erosion_iterations = 30
+thermal_erosion_threshold = 0.015
+
+[creatures]
+initial_count = 5000
+max_count = 200000
+initial_species = 10
+
+[climate]
+initial_temperature = 25.0
+temperature_variation = 8.0
+day_length = 2400.0
+season_length = 20000.0
+
+[vegetation]
+growth_rate = 0.015
+spread_rate = 0.008
+initial_density = 0.6
+max_density = 2.5
+
+[genetics]
+mutation_rate = 0.025
+crossover_rate = 0.7
+speciation_threshold = 0.25
+
+[metabolism]
+base_energy_drain = 0.004
+eat_energy_gain = 0.6
+attack_damage = 0.25
+reproduce_energy_cost = 0.15
+reproduce_cooldown = 40.0
+max_energy = 2.0
+
+[disease]
+enabled = false
+
+[rendering]
+width = 1920
+height = 1080
+
+[simulation]
+speed = 1.0
+max_ticks = 100000
+
+[output]
+directory = "./output/island"
+auto_save_interval = 5000

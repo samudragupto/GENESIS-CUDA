@@ -1,0 +1,68 @@
+[scenario]
+name = "Continental"
+description = "Large landmass with diverse biomes and climate zones"
+
+[world]
+size = 2048
+water_level = 0.30
+mountain_height = 1.2
+
+[terrain]
+octaves = 10
+lacunarity = 2.0
+persistence = 0.55
+seed = 67890
+erosion_iterations = 200
+erosion_droplets = 500000
+thermal_erosion_iterations = 80
+thermal_erosion_threshold = 0.008
+
+[creatures]
+initial_count = 50000
+max_count = 1000000
+initial_species = 20
+
+[climate]
+initial_temperature = 18.0
+temperature_variation = 25.0
+day_length = 2400.0
+season_length = 30000.0
+
+[vegetation]
+growth_rate = 0.008
+spread_rate = 0.004
+initial_density = 0.4
+max_density = 2.0
+
+[genetics]
+mutation_rate = 0.015
+crossover_rate = 0.75
+speciation_threshold = 0.35
+
+[metabolism]
+base_energy_drain = 0.006
+eat_energy_gain = 0.45
+attack_damage = 0.35
+reproduce_energy_cost = 0.25
+reproduce_cooldown = 60.0
+max_energy = 2.0
+
+[disease]
+enabled = true
+start_tick = 10000
+transmission_radius = 4.0
+transmission_probability = 0.03
+infection_duration = 150.0
+mortality_rate = 0.08
+
+[rendering]
+width = 2560
+height = 1440
+
+[simulation]
+speed = 1.0
+max_ticks = 200000
+
+[output]
+directory = "./output/continent"
+auto_save_interval = 10000

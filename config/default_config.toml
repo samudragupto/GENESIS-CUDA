@@ -1,0 +1,93 @@
+[scenario]
+name = "Default"
+description = "Standard balanced simulation"
+
+[world]
+size = 1024
+water_level = 0.35
+mountain_height = 1.0
+
+[terrain]
+octaves = 8
+lacunarity = 2.0
+persistence = 0.5
+seed = 42
+erosion_iterations = 100
+erosion_droplets = 200000
+thermal_erosion_iterations = 50
+thermal_erosion_threshold = 0.01
+
+[creatures]
+initial_count = 10000
+max_count = 500000
+initial_species = 10
+
+[climate]
+initial_temperature = 20.0
+temperature_variation = 15.0
+day_length = 2400.0
+season_length = 24000.0
+
+[vegetation]
+growth_rate = 0.01
+spread_rate = 0.005
+initial_density = 0.5
+max_density = 2.0
+
+[genetics]
+mutation_rate = 0.02
+crossover_rate = 0.7
+speciation_threshold = 0.3
+genome_size = 256
+
+[metabolism]
+base_energy_drain = 0.005
+eat_energy_gain = 0.5
+attack_damage = 0.3
+reproduce_energy_cost = 0.2
+reproduce_cooldown = 50.0
+max_energy = 2.0
+
+[disease]
+enabled = false
+start_tick = 5000
+transmission_radius = 5.0
+transmission_probability = 0.05
+infection_duration = 100.0
+mortality_rate = 0.1
+immunity_duration = 500.0
+
+[rendering]
+width = 1920
+height = 1080
+fov = 60.0
+bloom_threshold = 0.8
+bloom_intensity = 0.3
+bloom_passes = 3
+exposure = 1.2
+gamma = 2.2
+saturation = 1.1
+vignette_strength = 0.5
+fxaa_enabled = true
+
+[simulation]
+speed = 1.0
+max_ticks = 100000
+report_interval = 100
+compaction_interval = 50
+
+[output]
+directory = "./output"
+auto_save_interval = 5000
+export_interval = 1000
+
+[spatial]
+cell_size = 4.0
+
+[fluid]
+enabled = false
+max_particles = 100000
+smoothing_length = 0.04
+rest_density = 1000.0
+gas_constant = 2000.0
+viscosity = 0.01
