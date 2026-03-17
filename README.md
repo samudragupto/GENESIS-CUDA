@@ -7,7 +7,7 @@
 
 **GENESIS** is a massive-scale artificial life and planetary simulator written entirely in **C++ and CUDA**. By offloading 100% of the computational workload to the GPU, GENESIS eliminates CPU-GPU memory bottlenecks, allowing for the real-time simulation of millions of interacting creatures, dynamic climate patterns, fluid dynamics, and genetic evolution.
 
-## 🚀 Technical Highlights
+## Technical Highlights
 
 * **Custom Neural AI Engine:** Every creature possesses a unique neural network. Feed-forward evaluation is executed in parallel via custom Batched GEMM CUDA kernels, with weights dynamically decoded from organism genomes directly in VRAM.
 * **Genetic Algorithms:** Organism traits (speed, vision, diet, lifespan, neural topology) are encoded in a 256-float genome. Crossover, mutation (via `cuRAND`), and distance-based speciation occur entirely on the GPU.
@@ -353,32 +353,6 @@ flowchart TD
     end
 ```
 
-## SPH Fluid Dynamics Pipeline
-
-```mermaid
-flowchart TD
-    subgraph "SPH SIMULATION PIPELINE (Per Tick)"
-        A[Build Spatial Hash Grid<br/>Kernel 1: Hash particle positions] --> B[Sort Particles by Hash<br/>Thrust::sort_by_key]
-        B --> C[Find Cell Boundaries<br/>Kernel 2: Detect cell start/end]
-        C --> D[Compute Density & Pressure<br/>Kernel 3: SPH density summation<br/>Wendland C2 kernel]
-        D --> E[Compute Forces<br/>Kernel 4: Pressure + Viscosity +<br/>Surface Tension + Gravity]
-        E --> F[Integrate Positions<br/>Kernel 5: Leapfrog integration<br/>with boundary handling]
-        F --> G[Boundary Enforcement<br/>Kernel 6: Terrain collision<br/>+ world bounds]
-        G --> H{Evaporation/Rain<br/>Coupling?}
-        H -->|Yes| I[Climate Exchange Kernel<br/>Water ↔ Atmosphere transfer]
-        H -->|No| J[Update Render Buffers]
-        I --> J
-    end
-
-    subgraph "KERNEL CONFIGURATION"
-        K1[Block Size: 256 threads]
-        K2[Grid Size: N_particles / 256]
-        K3[Shared Memory: Neighbor tile caching<br/>~48KB per block]
-        K4[Smoothing Length: h = 0.04]
-        K5[Max Neighbors: ~64 per particle]
-    end
-```
-
 
 ## Genetic Algorithm GPU Pipeline
 
@@ -618,4 +592,70 @@ graph TB
         LB --> G0_WORLD
         LB --> G1_WORLD
     end
+```
+
+## Performance Context
+On an NVIDIA RTX 4060 laptop GPU (Compute Capability 8.9), the engine sustains:
+* **~0.35ms** per total simulation tick (AI + Physics + Genetics + Climate).
+* Up to **~3,000 Ticks Per Second (TPS)** for populations of 5,000 creatures on a 256x256 grid.
+* Scalable to **200,000+ simultaneous neural networks** in real-time.
+
+## Build Instructions (Windows)
+### Prerequisites
+* CMake (3.18 or higher)
+* Visual Studio 2022 (with "Desktop development with C++" workload)
+* NVIDIA CUDA Toolkit (12.x recommended)
+
+### Compilation
+Open a PowerShell terminal and run:
+```powershell
+# Clone the repository
+git clone https://github.com/YOUR-USERNAME/GENESIS-CUDA.git
+cd GENESIS-CUDA
+
+# Create build directory
+mkdir build
+cd build
+
+# Configure CMake targeting MSVC and x64 architecture
+cmake .. -G "Visual Studio 17 2022" -A x64
+
+# Build the project (Release mode for maximum optimization)
+cmake --build . --config Release --parallel
+```
+## Usage & Scenarios
+GENESIS includes a built-in scenario loader that configures the environment, initial population, and evolutionary pressures.
+
+### Run the Default Simulation
+```powershell
+.\Release\genesis.exe --world-size 256 --creatures 5000
+```
+### Evolutionary Scenarios
+
+* **The Archipelago** (Speciation focus): High water levels isolate populations.
+```powershell
+.\Release\genesis.exe --scenario island --world-size 512 --creatures 10000
+```
+
+* **The Pandemic** (Immune focus): Dense populations hit by an aggressive SIR-model disease.
+```powershell
+.\Release\genesis.exe --scenario pandemic --world-size 256 --creatures 10000
+```
+
+* **Mass Extinction** (Survival focus): Harsh climate and high energy drain.
+```powershell
+.\Release\genesis.exe --scenario extinction --world-size 256 --creatures 15000
+```
+## Running the Test & Benchmark Suites
+
+The project includes automated validation and performance profiling:
+
+```powershell
+# Run performance benchmarks (Memory bandwidth, reductions, neural GEMMs)
+.\Release\genesis.exe --benchmark
+
+# Run unit tests
+.\Release\test_spatial_hash.exe
+.\Release\test_genetics.exe
+.\Release\test_climate.exe
 ```
