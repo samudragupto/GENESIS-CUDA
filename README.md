@@ -16,9 +16,15 @@
 * **cosystem Dynamics:** Multi-trophic food web processing, spatial disease propagation (SIR model), and population-carrying capacity enforced via parallel reductions.
 
 ---
+## Numerical Stability & Precision
+To maintain stability across interacting differential equations (Fluid, Heat, Advection) running asynchronously on the GPU, specific constraints are enforced:
+* **Precision Strategy:** The simulation utilizes **FP32 (Single Precision `float`)** universally. While FP16/Tensor Cores are standard for Deep Learning, they were deliberately avoided here. Coordinate tracking across a 4096x4096 planetary grid requires high mantissa resolution to prevent spatial quantization, and the custom per-agent MLP evaluation is primarily memory-bandwidth bound, not compute bound.
+* **Time Integration:** Fixed timestep ($\Delta t$) decoupled by system. Global ecosystem updates operate at $\Delta t = 1.0$, while local physics and SPH integrations operate at $\Delta t = 0.001$.
+* **Heat Diffusion Solver:** Solved via parallel Jacobi iteration. To ensure convergence and prevent thermal explosion, the diffusion kernel strictly bounds maximum energy transfer per cell and executes fixed 50-100 iterations per macro-tick.
+* **Fluid Dynamics (SPH):** Adheres to the **CFL (Courant–Friedrichs–Lewy) condition** via velocity clamping. Tait Equation of State is used for weak compressibility, with density strictly clamped to prevent division-by-zero singularities during neighbor deficits.
+
 
 ## System Architecture
-
 GENESIS utilizes a highly concurrent, multi-stream architecture. The CPU acts only as an orchestrator, dispatching kernels to the GPU.
 
 ```mermaid
@@ -514,11 +520,6 @@ DRAW --> A1
 ## Analytics & Phylogenetic Engine
 
 ```mermaid
-
-```
-## System Architecture
-
-```mermaid
 flowchart TD
     subgraph "REAL-TIME ANALYTICS KERNELS"
         POP_COUNT[Population Count per Species<br/>Parallel Histogram Kernel]
@@ -595,10 +596,20 @@ graph TB
 ```
 
 ## Performance Context
-On an NVIDIA RTX 4060 laptop GPU (Compute Capability 8.9), the engine sustains:
-* **~0.35ms** per total simulation tick (AI + Physics + Genetics + Climate).
-* Up to **~3,000 Ticks Per Second (TPS)** for populations of 5,000 creatures on a 256x256 grid.
-* Scalable to **200,000+ simultaneous neural networks** in real-time.
+On an NVIDIA RTX 4060 Laptop (Compute Capability 8.9), the engine sustains ~0.35ms per tick (~2,850 Ticks Per Second).
+### Benchmark Conditions:
+* **Grid**: 256x256 (65,536 cells)
+* **Population**: 5,000 interacting agents
+* **Neural Topology**: 24 Input → 32 Hidden → 16 Hidden → 8 Output (per agent)
+* **Fluid Sim**: Disabled (SPH dominates frametimes when active)
+* **Interaction Radius**: 4.0f grid units
+
+## Known Bottlenecks & Hardware Limitations
+While highly optimized, the simulation faces realistic hardware constraints under extreme scaling:
+* **Memory Bandwidth Limits**: Even with spatial hashing and cell sorting, neighbor querying (combat/mating) results in scattered global memory reads. This makes the interaction phase strictly memory-bound.
+* **Warp Divergence**: The neural network engine allows genes to dictate activation functions (ReLU, Tanh, Sigmoid) per organism. If organisms within the same Warp have mutated different activation genes, execution paths diverge, temporarily halving SM efficiency.
+* **Atomic Contention**: During high-density population clustering (e.g., around an oasis), atomic additions atomicAdd on vegetation cells and spatial grid bucket indices experience severe thread contention.
+
 
 ## Build Instructions (Windows)
 ### Prerequisites
